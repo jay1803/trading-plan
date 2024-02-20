@@ -68,7 +68,7 @@ const App: FC = () => {
                 ? "[[id:31cd5804-5e07-4457-ba79-33b689264631][开仓记录]]"
                 : " [[id:1ceaaced-5d1d-41a1-8249-d12a53037a60][空仓记录]]"
         }
-- 代码：[[roam:${code}]]
+- 代码：[[roam:$${code}]]
 - 操作：${action}
 - 市场情绪：${sentiment}
 - 周线趋势：${weeklyTrend}
