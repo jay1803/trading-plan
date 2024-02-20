@@ -120,7 +120,7 @@ const App: FC = () => {
         <Container p="8" size="1">
             <Flex direction="column" gap="4">
                 <Heading as="h1" size="8">
-                    Trading Plan
+                    简易交易流程表
                 </Heading>
                 <Separator size="4" />
                 <Field label="股票代码">
