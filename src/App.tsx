@@ -14,14 +14,13 @@ import "@radix-ui/themes/styles.css";
 
 type FormProps = {
     label: string;
-    direction?: "row" | "column";
     children: ReactNode;
 };
 
 const Field: FC<FormProps> = (props: FormProps) => {
-    const { label, children, direction = "row" } = props;
+    const { label, children } = props;
     return (
-        <Flex direction={direction} gap="2">
+        <Flex gap="2" align="center">
             <Text style={{ wordBreak: "keep-all" }}>{label}</Text>
             {children}
         </Flex>
@@ -31,10 +30,11 @@ const Field: FC<FormProps> = (props: FormProps) => {
 const App: FC = () => {
     const [code, setCode] = useState("");
     const [action, setAction] = useState("开仓");
-    const [sentiment, setSentiment] = useState("多头");
     const [weeklyTrend, setWeeklyTrend] = useState("多头趋势");
     const [dailyTrend, setDailyTrend] = useState("多头趋势");
     const [slope, setSlope] = useState("1 点钟方向");
+    const [plan, setPlan] = useState("");
+    const [buyOrSell, setBuyOrSell] = useState("做多");
     const [winPlan, setWinPlan] = useState("");
     const [lostPlan, setLostPlan] = useState("");
     const [winPrice, setWinPrice] = useState(20);
@@ -70,22 +70,25 @@ const App: FC = () => {
         }
 - 代码：[[roam:$${code}]]
 - 操作：${action}
-- 市场情绪：${sentiment}
 - 周线趋势：${weeklyTrend}
 - 日线趋势：${dailyTrend}
 - 趋势的斜率为：${slope}
-交易策略：
-- 打算买入的价格：${buyPrice}
+
+- 计划：
+  ${plan}
+- 计划：${buyOrSell}
+- 买入价：${buyPrice}
         
-预期：
-- 如果市場運行方向符合預期，你打算在何種情況下止盈出局：
-${winPlan}
+- 止盈计划：
+  如果市場運行方向符合預期，你打算在何種情況下止盈出局：
+  ${winPlan}
 - 止盈价：${winPrice}
 
-底线：
-- 如果市場運行方向不符合預期，你打算在何種情況下止損出局：
-${lostPlan}
+- 止损计划：
+  如果市場運行方向不符合預期，你打算在何種情況下止損出局：
+  ${lostPlan}
 - 止损价：${lostPrice}
+
 - 盈亏比：${winToLoseRate}
         
 风险管理：
@@ -104,9 +107,10 @@ ${lostPlan}
         slope,
         winPlan,
         lostPlan,
-        sentiment,
         maxShare,
         winToLoseRate,
+        plan,
+        buyOrSell,
     ]);
 
     const handleCopy = () => {
@@ -118,6 +122,7 @@ ${lostPlan}
                 <Heading as="h1" size="8">
                     Trading Plan
                 </Heading>
+                <Separator size="4" />
                 <Field label="股票代码">
                     <TextField.Root>
                         <TextField.Input
@@ -139,7 +144,6 @@ ${lostPlan}
                         <Select.Trigger />
                         <Select.Content>
                             <Select.Group>
-                                <Select.Label>操作</Select.Label>
                                 <Select.Item value="开仓">开仓</Select.Item>
                                 <Select.Item value="平仓">平仓</Select.Item>
                                 <Select.Item value="加仓">加仓</Select.Item>
@@ -148,7 +152,7 @@ ${lostPlan}
                     </Select.Root>
                 </Field>
                 <Separator size="4" />
-                <Heading as="h2" size="6">
+                <Heading as="h2" size="4">
                     趋势
                 </Heading>
                 <Field label="周线趋势">
@@ -161,7 +165,6 @@ ${lostPlan}
                         <Select.Trigger />
                         <Select.Content>
                             <Select.Group>
-                                <Select.Label>周线趋势</Select.Label>
                                 <Select.Item value="多头趋势">
                                     多头趋势
                                 </Select.Item>
@@ -185,7 +188,6 @@ ${lostPlan}
                         <Select.Trigger />
                         <Select.Content>
                             <Select.Group>
-                                <Select.Label>日线趋势</Select.Label>
                                 <Select.Item value="多头趋势">
                                     多头趋势
                                 </Select.Item>
@@ -209,7 +211,6 @@ ${lostPlan}
                         <Select.Trigger />
                         <Select.Content>
                             <Select.Group>
-                                <Select.Label>日线趋势</Select.Label>
                                 <Select.Item value="12 点钟方向">
                                     12 点钟方向
                                 </Select.Item>
@@ -235,25 +236,32 @@ ${lostPlan}
                         </Select.Content>
                     </Select.Root>
                 </Field>
-                <Field label="市场情绪">
+                <Separator size="4" />
+                <Heading as="h2" size="4">
+                    计划
+                </Heading>
+                <TextArea
+                    size="3"
+                    style={{ width: "100%" }}
+                    placeholder="进入交易的理由"
+                    onChange={(e) => setPlan(e.target.value)}
+                />
+                <Field label="做多做空">
                     <Select.Root
-                        defaultValue="多头"
+                        defaultValue="做多"
                         onValueChange={(value) => {
-                            setSentiment(value);
+                            setBuyOrSell(value);
                         }}
                     >
                         <Select.Trigger />
                         <Select.Content>
                             <Select.Group>
-                                <Select.Label>市场情绪</Select.Label>
-                                <Select.Item value="多头">多头</Select.Item>
-                                <Select.Item value="空头">空头</Select.Item>
-                                <Select.Item value="震荡">震荡</Select.Item>
+                                <Select.Item value="做多">做多</Select.Item>
+                                <Select.Item value="做空">做空</Select.Item>
                             </Select.Group>
                         </Select.Content>
                     </Select.Root>
                 </Field>
-                <Separator size="4" />
                 <Field label="买入价格">
                     <TextField.Root>
                         <TextField.Input
@@ -262,13 +270,16 @@ ${lostPlan}
                         />
                     </TextField.Root>
                 </Field>
-                <Field label="止盈计划">
-                    <TextArea
-                        style={{ width: "100%" }}
-                        placeholder="如果市場運行方向符合預期，你打算在何種情況下止盈出局"
-                        onChange={(e) => setWinPlan(e.target.value)}
-                    />
-                </Field>
+                <Separator size="4" />
+                <Heading as="h2" size="4">
+                    止盈计划
+                </Heading>
+                <TextArea
+                    size="3"
+                    style={{ width: "100%" }}
+                    placeholder="如果市場運行方向符合預期，你打算在何種情況下止盈出局"
+                    onChange={(e) => setWinPlan(e.target.value)}
+                />
                 <Field label="止盈价格">
                     <TextField.Root>
                         <TextField.Input
@@ -278,13 +289,15 @@ ${lostPlan}
                     </TextField.Root>
                 </Field>
                 <Separator size="4" />
-                <Field label="止损计划">
-                    <TextArea
-                        style={{ width: "100%" }}
-                        placeholder="如果市場運行方向不符合預期，你打算在何種情況下止損出局"
-                        onChange={(e) => setLostPlan(e.target.value)}
-                    />
-                </Field>
+                <Heading as="h2" size="4">
+                    止损计划
+                </Heading>
+                <TextArea
+                    size="3"
+                    style={{ width: "100%" }}
+                    placeholder="如果市場運行方向不符合預期，你打算在何種情況下止損出局"
+                    onChange={(e) => setLostPlan(e.target.value)}
+                />
                 <Field label="止损价格">
                     <TextField.Root>
                         <TextField.Input
@@ -294,14 +307,13 @@ ${lostPlan}
                     </TextField.Root>
                 </Field>
                 <Separator size="4" />
-                <Field label="止盈止损比率">
-                    <TextField.Root>
-                        <TextField.Input
-                            value={winToLoseRate.toString()}
-                            readOnly
-                        />
-                    </TextField.Root>
-                </Field>
+                <Heading as="h2" size="4">
+                    盈亏比: {winToLoseRate}
+                </Heading>
+                <Separator size="4" />
+                <Heading as="h2" size="4">
+                    风险管理
+                </Heading>
                 <Field label="最大止损金额">
                     <TextField.Root>
                         <TextField.Input
