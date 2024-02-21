@@ -17,7 +17,7 @@ root.render(
                 radius="large"
                 scaling="95%"
             >
-                <Container p="8" size="1">
+                <Container p={{ initial: "2", sm: "8" }} size="1">
                     <App />
                 </Container>
             </Theme>

@@ -10,6 +10,7 @@ import {
     Separator,
     Callout,
     Link,
+    RadioGroup,
 } from "@radix-ui/themes";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import "@radix-ui/themes/styles.css";
@@ -215,11 +216,25 @@ const App: FC = () => {
                 onChange={(e) => setPlan(e.target.value)}
             />
             <Field label="做多做空">
-                <Selector
+                <RadioGroup.Root
                     defaultValue="做多"
-                    handleValueChange={setBuyOrSell}
-                    values={["做多", "做空"]}
-                />
+                    onValueChange={(value) => {
+                        setBuyOrSell(value);
+                    }}
+                >
+                    <Flex gap="6">
+                        <Text as="label" size="2">
+                            <Flex gap="2">
+                                <RadioGroup.Item value="做多" /> 做多
+                            </Flex>
+                        </Text>
+                        <Text as="label" size="2">
+                            <Flex gap="2">
+                                <RadioGroup.Item value="做空" /> 做空
+                            </Flex>
+                        </Text>
+                    </Flex>
+                </RadioGroup.Root>
             </Field>
             <Field label="买入价格">
                 <TextField.Root>
@@ -265,11 +280,13 @@ const App: FC = () => {
                     />
                 </TextField.Root>
             </Field>
-            <Callout.Root size="3" color={winToLoseRate >= 3 ? "green" : "red"}>
+            <Separator size="4" />
+            <Callout.Root color={winToLoseRate >= 3 ? "green" : "red"}>
                 <Callout.Text>
                     <Text weight="bold">盈亏比: {winToLoseRate}</Text>
                 </Callout.Text>
             </Callout.Root>
+            <Separator size="4" />
             <Heading as="h2" size="4">
                 风险管理
             </Heading>
@@ -293,6 +310,8 @@ const App: FC = () => {
                     padding: "var(--space-1)",
                     fontSize: "var(--font-size-1)",
                     borderRadius: "var(--radius-1)",
+                    maxWidth: "100%",
+                    overflowX: "auto",
                 }}
             >
                 {text}
