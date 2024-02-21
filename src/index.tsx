@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Theme } from "@radix-ui/themes";
+import { Theme, Container } from "@radix-ui/themes";
 import { ThemeProvider } from "next-themes";
 import { Analytics } from "@vercel/analytics/react";
 import App from "./App";
@@ -17,7 +17,9 @@ root.render(
                 radius="large"
                 scaling="95%"
             >
-                <App />
+                <Container p="8" size="1">
+                    <App />
+                </Container>
             </Theme>
         </ThemeProvider>
         <Analytics />
