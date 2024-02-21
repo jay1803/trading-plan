@@ -9,7 +9,10 @@ import {
     Flex,
     Select,
     Separator,
+    Callout,
+    Link,
 } from "@radix-ui/themes";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import "@radix-ui/themes/styles.css";
 
 type FormProps = {
@@ -306,11 +309,14 @@ const App: FC = () => {
                         />
                     </TextField.Root>
                 </Field>
-                <Separator size="4" />
-                <Heading as="h2" size="4">
-                    盈亏比: {winToLoseRate}
-                </Heading>
-                <Separator size="4" />
+                <Callout.Root
+                    size="3"
+                    color={winToLoseRate >= 3 ? "green" : "red"}
+                >
+                    <Callout.Text>
+                        <Text weight="bold">盈亏比: {winToLoseRate}</Text>
+                    </Callout.Text>
+                </Callout.Root>
                 <Heading as="h2" size="4">
                     风险管理
                 </Heading>
@@ -338,8 +344,34 @@ const App: FC = () => {
                 >
                     {text}
                 </pre>
+                <Button onClick={handleCopy}>Copy</Button>
+                <Separator size="4" />
+                <Flex gap="3" align="center">
+                    <Text size="1">
+                        Inspired by{" "}
+                        <Link
+                            href="https://themarketmemo.com/tradingchecklist/"
+                            target="_blank"
+                        >
+                            簡易交易流程表
+                        </Link>
+                    </Text>
+                    <Separator orientation="vertical" size="1" />
+                    <Text size="1">
+                        Made by{" "}
+                        <Link href="https://maxoxo.me/" target="_blank">
+                            max
+                        </Link>
+                    </Text>
+                    <Separator orientation="vertical" size="1" />
+                    <Link
+                        href="https://github.com/jay1803/trading-plan"
+                        target="_blank"
+                    >
+                        <GitHubLogoIcon width="12" height="12" />
+                    </Link>
+                </Flex>
             </Flex>
-            <Button onClick={handleCopy}>Copy</Button>
         </Container>
     );
 };
