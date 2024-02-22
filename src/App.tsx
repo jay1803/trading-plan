@@ -115,8 +115,9 @@ const App: FC = () => {
 - 交易理由：
   ${plan}
 ${
-    action === "加仓" || action === "减仓"
-        ? `- 盈亏：`
+    action !== "开仓"
+        ? `
+- 盈亏金额：`
         : `
 - 止盈价：${winPrice}
 - 止盈计划：
@@ -266,65 +267,76 @@ ${
                     </TextField.Root>
                 </Field>
             )}
-            <Separator size="4" />
-            <Heading as="h2" size="4">
-                止盈计划
-            </Heading>
-            <TextArea
-                size="3"
-                style={{ width: "100%" }}
-                placeholder="如果市場運行方向符合預期，你打算在何種情況下止盈出局"
-                onChange={(e) => setWinPlan(e.target.value)}
-            />
-            <Field label="止盈价格">
-                <TextField.Root>
-                    <TextField.Input
-                        value={winPrice.toString()}
-                        onChange={(e) => updateWinPrice(+e.target.value)}
+            {action !== "平仓" && (
+                <>
+                    <Separator size="4" />
+                    <Heading as="h2" size="4">
+                        止盈计划
+                    </Heading>
+                    <TextArea
+                        size="3"
+                        style={{ width: "100%" }}
+                        placeholder="如果市場運行方向符合預期，你打算在何種情況下止盈出局"
+                        onChange={(e) => setWinPlan(e.target.value)}
                     />
-                </TextField.Root>
-            </Field>
-            <Separator size="4" />
-            <Heading as="h2" size="4">
-                止损计划
-            </Heading>
-            <TextArea
-                size="3"
-                style={{ width: "100%" }}
-                placeholder="如果市場運行方向不符合預期，你打算在何種情況下止損出局"
-                onChange={(e) => setLostPlan(e.target.value)}
-            />
-            <Field label="止损价格">
-                <TextField.Root>
-                    <TextField.Input
-                        value={lostPrice.toString()}
-                        onChange={(e) => updateLostPrice(+e.target.value)}
+                    <Field label="止盈价格">
+                        <TextField.Root>
+                            <TextField.Input
+                                value={winPrice.toString()}
+                                onChange={(e) =>
+                                    updateWinPrice(+e.target.value)
+                                }
+                            />
+                        </TextField.Root>
+                    </Field>
+                    <Separator size="4" />
+                    <Heading as="h2" size="4">
+                        止损计划
+                    </Heading>
+                    <TextArea
+                        size="3"
+                        style={{ width: "100%" }}
+                        placeholder="如果市場運行方向不符合預期，你打算在何種情況下止損出局"
+                        onChange={(e) => setLostPlan(e.target.value)}
                     />
-                </TextField.Root>
-            </Field>
-            <Separator size="4" />
-            <Callout.Root color={winToLoseRate >= 3 ? "green" : "red"}>
-                <Callout.Text>
-                    <Text weight="bold">盈亏比: {winToLoseRate}</Text>
-                </Callout.Text>
-            </Callout.Root>
-            <Separator size="4" />
-            <Heading as="h2" size="4">
-                风险管理
-            </Heading>
-            <Field label="最大止损金额">
-                <TextField.Root>
-                    <TextField.Input
-                        value={maxLost.toString()}
-                        onChange={(e) => updateMaxLost(+e.target.value)}
-                    />
-                </TextField.Root>
-            </Field>
-            <Field label="最大持仓数量">
-                <TextField.Root>
-                    <TextField.Input value={maxShare.toString()} readOnly />
-                </TextField.Root>
-            </Field>
+                    <Field label="止损价格">
+                        <TextField.Root>
+                            <TextField.Input
+                                value={lostPrice.toString()}
+                                onChange={(e) =>
+                                    updateLostPrice(+e.target.value)
+                                }
+                            />
+                        </TextField.Root>
+                    </Field>
+                    <Separator size="4" />
+                    <Callout.Root color={winToLoseRate >= 3 ? "green" : "red"}>
+                        <Callout.Text>
+                            <Text weight="bold">盈亏比: {winToLoseRate}</Text>
+                        </Callout.Text>
+                    </Callout.Root>
+                    <Separator size="4" />
+                    <Heading as="h2" size="4">
+                        风险管理
+                    </Heading>
+                    <Field label="最大止损金额">
+                        <TextField.Root>
+                            <TextField.Input
+                                value={maxLost.toString()}
+                                onChange={(e) => updateMaxLost(+e.target.value)}
+                            />
+                        </TextField.Root>
+                    </Field>
+                    <Field label="最大持仓数量">
+                        <TextField.Root>
+                            <TextField.Input
+                                value={maxShare.toString()}
+                                readOnly
+                            />
+                        </TextField.Root>
+                    </Field>
+                </>
+            )}
             <Separator size="4" />
             <pre
                 style={{
