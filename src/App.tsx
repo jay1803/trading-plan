@@ -104,7 +104,7 @@ const App: FC = () => {
         return `** ${code} ${
             orgMode ? `[[roam:${action}记录]]` : `${action}记录`
         }
-- 代码：${orgMode ? `[[roam:${code}]]` : `$${code}`}
+- 代码：${orgMode ? `[[roam:$${code}]]` : `$${code}`}
 - 操作：${action}
 - 周线趋势：${weeklyTrend}
 - 日线趋势：${dailyTrend}
