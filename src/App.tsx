@@ -252,7 +252,7 @@ ${
                     </TextField.Root>
                 </Field>
             )}
-            {action !== "平仓" && (
+            {action === "开仓" && (
                 <>
                     <Separator size="4" />
                     <Heading as="h2" size="4">
