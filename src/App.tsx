@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, ReactNode } from "react";
+import { useState, useEffect, FC, ReactNode, useMemo } from "react";
 import {
     TextField,
     TextArea,
@@ -72,10 +72,7 @@ const App: FC = () => {
     const [winPrice, setWinPrice] = useState(20);
     const [lostPrice, setLostPrice] = useState(7);
     const [buyPrice, setBuyPrice] = useState(10);
-    const [winToLoseRate, setWinToLoseRate] = useState(0);
     const [maxLost, setMaxLost] = useState(100);
-    const [maxShare, setMaxShare] = useState(0);
-    const [text, setText] = useState("");
 
     const updateLostPrice = (value: string) => {
         setLostPrice(Number(value));
@@ -92,10 +89,16 @@ const App: FC = () => {
         setMaxLost(Number(value));
     };
 
-    useEffect(() => {
-        setWinToLoseRate((winPrice - buyPrice) / (buyPrice - lostPrice));
-        setMaxShare(maxLost / (buyPrice - lostPrice));
-        setText(`** ${code} ${
+    const winToLoseRate = useMemo(() => {
+        return (winPrice - buyPrice) / (buyPrice - lostPrice);
+    }, [winPrice, buyPrice, lostPrice]);
+
+    const maxShare = useMemo(() => {
+        return maxLost / (buyPrice - lostPrice);
+    }, [maxLost, buyPrice, lostPrice]);
+
+    const text = useMemo(() => {
+        return `** ${code} ${
             action === "开仓"
                 ? "[[id:31cd5804-5e07-4457-ba79-33b689264631][开仓记录]]"
                 : " [[id:1ceaaced-5d1d-41a1-8249-d12a53037a60][空仓记录]]"
@@ -126,7 +129,7 @@ const App: FC = () => {
 风险管理：
 - 最大可承受亏损金额：${maxLost}
 - 最多可持有的头寸数量：${maxShare}
-`);
+`;
     }, [
         winPrice,
         lostPrice,
