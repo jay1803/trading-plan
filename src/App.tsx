@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, ReactNode, useMemo } from "react";
+import { useState, FC, ReactNode, useMemo } from "react";
 import {
     TextField,
     TextArea,
@@ -11,6 +11,7 @@ import {
     Callout,
     Link,
     RadioGroup,
+    Checkbox,
 } from "@radix-ui/themes";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import "@radix-ui/themes/styles.css";
@@ -73,20 +74,22 @@ const App: FC = () => {
     const [lostPrice, setLostPrice] = useState(7);
     const [buyPrice, setBuyPrice] = useState(10);
     const [maxLost, setMaxLost] = useState(100);
+    const [result, setResult] = useState("");
+    const [orgMode, setOrgMode] = useState(true);
 
-    const updateLostPrice = (value: string) => {
-        setLostPrice(Number(value));
+    const updateLostPrice = (value: number) => {
+        setLostPrice(value);
     };
 
-    const updateWinPrice = (value: string) => {
-        setWinPrice(Number(value));
+    const updateWinPrice = (value: number) => {
+        setWinPrice(value);
     };
-    const updateBuyPrice = (value: string) => {
-        setBuyPrice(Number(value));
+    const updateBuyPrice = (value: number) => {
+        setBuyPrice(value);
     };
 
-    const updateMaxLost = (value: string) => {
-        setMaxLost(Number(value));
+    const updateMaxLost = (value: number) => {
+        setMaxLost(value);
     };
 
     const winToLoseRate = useMemo(() => {
@@ -99,36 +102,39 @@ const App: FC = () => {
 
     const text = useMemo(() => {
         return `** ${code} ${
-            action === "开仓"
-                ? "[[id:31cd5804-5e07-4457-ba79-33b689264631][开仓记录]]"
-                : " [[id:1ceaaced-5d1d-41a1-8249-d12a53037a60][空仓记录]]"
+            orgMode ? `[[roam:${action}记录]]` : `${action}记录`
         }
-- 代码：[[roam:$${code}]]
+- 代码：${orgMode ? `[[roam:${code}]]` : `$${code}`}
 - 操作：${action}
 - 周线趋势：${weeklyTrend}
 - 日线趋势：${dailyTrend}
 - 趋势的斜率为：${slope}
 
-- 计划：
+- 计划${buyOrSell}
+- 交易价格：${buyPrice}
+- 交易理由：
   ${plan}
-- 计划：${buyOrSell}
-- 买入价：${buyPrice}
-        
+${
+    action === "加仓" || action === "减仓"
+        ? `- 盈亏：`
+        : `
+- 止盈价：${winPrice}
 - 止盈计划：
   如果市場運行方向符合預期，你打算在何種情況下止盈出局：
   ${winPlan}
-- 止盈价：${winPrice}
 
+- 止损价：${lostPrice}
 - 止损计划：
   如果市場運行方向不符合預期，你打算在何種情況下止損出局：
   ${lostPlan}
-- 止损价：${lostPrice}
 
 - 盈亏比：${winToLoseRate}
         
 风险管理：
 - 最大可承受亏损金额：${maxLost}
 - 最多可持有的头寸数量：${maxShare}
+`
+}
 `;
     }, [
         winPrice,
@@ -146,6 +152,7 @@ const App: FC = () => {
         winToLoseRate,
         plan,
         buyOrSell,
+        orgMode,
     ]);
 
     const handleCopy = () => {
@@ -163,7 +170,7 @@ const App: FC = () => {
                         value={code}
                         size="2"
                         onChange={(e) => {
-                            setCode(e.target.value);
+                            setCode(e.target.value.toUpperCase());
                         }}
                     />
                 </TextField.Root>
@@ -172,7 +179,7 @@ const App: FC = () => {
                 <Selector
                     defaultValue="开仓"
                     handleValueChange={setAction}
-                    values={["开仓", "平仓", "加仓"]}
+                    values={["开仓", "平仓", "加仓", "减仓"]}
                 />
             </Field>
             <Separator size="4" />
@@ -239,14 +246,26 @@ const App: FC = () => {
                     </Flex>
                 </RadioGroup.Root>
             </Field>
-            <Field label="买入价格">
+            <Field label="交易价格">
                 <TextField.Root>
                     <TextField.Input
                         value={buyPrice.toString()}
-                        onChange={(e) => updateBuyPrice(e.target.value)}
+                        onChange={(e) => updateBuyPrice(+e.target.value)}
                     />
                 </TextField.Root>
             </Field>
+            {action !== "开仓" && (
+                <Field label="盈亏金额">
+                    <TextField.Root>
+                        <TextField.Input
+                            value={result}
+                            onChange={(e) => {
+                                setResult(e.target.value);
+                            }}
+                        />
+                    </TextField.Root>
+                </Field>
+            )}
             <Separator size="4" />
             <Heading as="h2" size="4">
                 止盈计划
@@ -261,7 +280,7 @@ const App: FC = () => {
                 <TextField.Root>
                     <TextField.Input
                         value={winPrice.toString()}
-                        onChange={(e) => updateWinPrice(e.target.value)}
+                        onChange={(e) => updateWinPrice(+e.target.value)}
                     />
                 </TextField.Root>
             </Field>
@@ -279,7 +298,7 @@ const App: FC = () => {
                 <TextField.Root>
                     <TextField.Input
                         value={lostPrice.toString()}
-                        onChange={(e) => updateLostPrice(e.target.value)}
+                        onChange={(e) => updateLostPrice(+e.target.value)}
                     />
                 </TextField.Root>
             </Field>
@@ -297,7 +316,7 @@ const App: FC = () => {
                 <TextField.Root>
                     <TextField.Input
                         value={maxLost.toString()}
-                        onChange={(e) => updateMaxLost(e.target.value)}
+                        onChange={(e) => updateMaxLost(+e.target.value)}
                     />
                 </TextField.Root>
             </Field>
@@ -319,6 +338,18 @@ const App: FC = () => {
             >
                 {text}
             </pre>
+            <Text as="label" size="2">
+                <Flex gap="2">
+                    <Checkbox
+                        defaultChecked
+                        checked={orgMode}
+                        onCheckedChange={(checked: boolean) => {
+                            setOrgMode(checked);
+                        }}
+                    />{" "}
+                    OrgMode
+                </Flex>
+            </Text>
             <Button onClick={handleCopy}>Copy</Button>
             <Separator size="4" />
             <Flex gap="3" align="center">
