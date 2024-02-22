@@ -77,21 +77,6 @@ const App: FC = () => {
     const [result, setResult] = useState("");
     const [orgMode, setOrgMode] = useState(true);
 
-    const updateLostPrice = (value: number) => {
-        setLostPrice(value);
-    };
-
-    const updateWinPrice = (value: number) => {
-        setWinPrice(value);
-    };
-    const updateBuyPrice = (value: number) => {
-        setBuyPrice(value);
-    };
-
-    const updateMaxLost = (value: number) => {
-        setMaxLost(value);
-    };
-
     const winToLoseRate = useMemo(() => {
         return (winPrice - buyPrice) / (buyPrice - lostPrice);
     }, [winPrice, buyPrice, lostPrice]);
@@ -251,7 +236,7 @@ ${
                 <TextField.Root>
                     <TextField.Input
                         value={buyPrice.toString()}
-                        onChange={(e) => updateBuyPrice(+e.target.value)}
+                        onChange={(e) => setBuyPrice(+e.target.value)}
                     />
                 </TextField.Root>
             </Field>
@@ -283,9 +268,7 @@ ${
                         <TextField.Root>
                             <TextField.Input
                                 value={winPrice.toString()}
-                                onChange={(e) =>
-                                    updateWinPrice(+e.target.value)
-                                }
+                                onChange={(e) => setWinPrice(+e.target.value)}
                             />
                         </TextField.Root>
                     </Field>
@@ -303,9 +286,7 @@ ${
                         <TextField.Root>
                             <TextField.Input
                                 value={lostPrice.toString()}
-                                onChange={(e) =>
-                                    updateLostPrice(+e.target.value)
-                                }
+                                onChange={(e) => setLostPrice(+e.target.value)}
                             />
                         </TextField.Root>
                     </Field>
@@ -323,7 +304,7 @@ ${
                         <TextField.Root>
                             <TextField.Input
                                 value={maxLost.toString()}
-                                onChange={(e) => updateMaxLost(+e.target.value)}
+                                onChange={(e) => setMaxLost(+e.target.value)}
                             />
                         </TextField.Root>
                     </Field>
