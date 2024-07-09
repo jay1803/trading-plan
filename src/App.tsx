@@ -235,7 +235,8 @@ ${
             <Field label="交易价格">
                 <TextField.Root>
                     <TextField.Input
-                        value={buyPrice.toString()}
+                        value={buyPrice}
+                        type="number"
                         onChange={(e) => setBuyPrice(+e.target.value)}
                     />
                 </TextField.Root>
@@ -267,7 +268,8 @@ ${
                     <Field label="止盈价格">
                         <TextField.Root>
                             <TextField.Input
-                                value={winPrice.toString()}
+                                value={winPrice}
+                                type="number"
                                 onChange={(e) => setWinPrice(+e.target.value)}
                             />
                         </TextField.Root>
@@ -285,7 +287,8 @@ ${
                     <Field label="止损价格">
                         <TextField.Root>
                             <TextField.Input
-                                value={lostPrice.toString()}
+                                value={lostPrice}
+                                type="number"
                                 onChange={(e) => setLostPrice(+e.target.value)}
                             />
                         </TextField.Root>
