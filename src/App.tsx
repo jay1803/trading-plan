@@ -13,6 +13,8 @@ import {
   Checkbox,
   SegmentedControl,
   type FlexProps,
+  DataList,
+  Box,
 } from "@radix-ui/themes";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import "@radix-ui/themes/styles.css";
@@ -69,14 +71,14 @@ const App: FC = () => {
   const [slope, setSlope] = useState("1 点钟方向");
   const [plan, setPlan] = useState("");
   const [buyOrSell, setBuyOrSell] = useState("做多");
-  const [profitPrice, setProfitPrice] = useState(20);
-  const [riskPrice, setRiskPrice] = useState(7);
-  const [buyPrice, setBuyPrice] = useState(10);
+  const [profitPrice, setProfitPrice] = useState(260);
+  const [riskPrice, setRiskPrice] = useState(247);
+  const [buyPrice, setBuyPrice] = useState(250);
   const [maxLost, setMaxLost] = useState(100);
   const [result, setResult] = useState("");
   const [orgMode, setOrgMode] = useState(true);
-  const [optionPremium, setOptionPremium] = useState(1);
-  const [optionStrikePrice, setOpetionStrikePrice] = useState(1);
+  const [optionPremium, setOptionPremium] = useState(17);
+  const [optionStrikePrice, setOptionStrikePrice] = useState(232);
 
   const winToLoseRate = useMemo(() => {
     return (profitPrice - buyPrice) / (buyPrice - riskPrice);
@@ -91,12 +93,28 @@ const App: FC = () => {
   }, [profitPrice, buyPrice]);
 
   const optionROI = useMemo(() => {
-    return action === "开仓"
+    return buyOrSell === "做多"
       ? ((profitPrice - optionStrikePrice - optionPremium) / optionPremium) *
           100
       : ((optionStrikePrice - profitPrice - optionPremium) / optionPremium) *
           100;
-  }, [optionPremium, optionStrikePrice, profitPrice, action]);
+  }, [optionPremium, optionStrikePrice, profitPrice, buyOrSell]);
+
+  const optionProfit = useMemo(() => {
+    return buyOrSell === "做多"
+      ? (profitPrice - optionStrikePrice - optionPremium) * 100
+      : (optionStrikePrice - profitPrice - optionPremium) * 100;
+  }, [optionPremium, optionStrikePrice, profitPrice, buyOrSell]);
+
+  const optionLost = useMemo(() => {
+    return buyOrSell === "做多"
+      ? (riskPrice - optionStrikePrice - optionPremium) * 100
+      : (optionStrikePrice - riskPrice - optionPremium) * 100;
+  }, [optionPremium, optionStrikePrice, riskPrice, buyOrSell]);
+
+  const optionProfileLostRate = useMemo(() => {
+    return (optionProfit / optionLost) * -1;
+  }, [optionLost, optionProfit]);
 
   const text = useMemo(() => {
     return `** ${code} ${orgMode ? `[[roam:${action}记录]]` : `${action}记录`}
@@ -174,9 +192,6 @@ const App: FC = () => {
       </Flex>
 
       <Separator size="4" />
-      <Heading as="h2" size="4">
-        趋势
-      </Heading>
       <Field label="周线趋势">
         <SegmentedControl.Root
           defaultValue="多头"
@@ -287,28 +302,17 @@ const App: FC = () => {
           />
         </Field>
       )}
-      <Separator size="4" />
-      <Callout.Root color={winToLoseRate >= 3 ? "green" : "red"}>
-        <Callout.Text weight="bold">
-          盈亏比: {winToLoseRate.toFixed(2)}
-          <br />
-          <br />
-          ROI: {(stockROI * 100).toFixed(2)}%
-          <br />
-          <br />
-          最大持仓数: {maxShare.toFixed(0)}
-        </Callout.Text>
-      </Callout.Root>
-      <Separator size="4" />
-      <Heading as="h2" size="4">
-        期权计算
-      </Heading>
       <Flex gap="4" align="center">
-        <Field label="行权价" direction="column" justify="start" align="start">
+        <Field
+          label="期权行权价"
+          direction="column"
+          justify="start"
+          align="start"
+        >
           <TextField.Root
             value={optionStrikePrice.toString()}
             type="number"
-            onChange={(e) => setOpetionStrikePrice(+e.target.value)}
+            onChange={(e) => setOptionStrikePrice(+e.target.value)}
           />
         </Field>
         <Field
@@ -324,21 +328,108 @@ const App: FC = () => {
           />
         </Field>
       </Flex>
-      <Callout.Root color={optionROI >= 1 ? "green" : "red"}>
-        <Callout.Text>
-          <Text weight="bold">期权 ROI: {optionROI.toFixed(2)}%</Text>
-        </Callout.Text>
-      </Callout.Root>
-
-      <Separator size="4" />
+      <Flex
+        direction="column"
+        width="100%"
+        style={{
+          backgroundColor: "var(--green-a3)",
+          color: "var(--green-a11)",
+          fontWeight: "600",
+          borderRadius: "var(--radius-3)",
+          border: "1px solid var(--green-a4)",
+        }}
+      >
+        <Flex align="center" justify="between" width="100%">
+          <Flex width="50%" justify="center" flexGrow="1" flexShrink="0">
+            <Text align="center">期权盈亏</Text>
+          </Flex>
+          <Box
+            style={{
+              width: "1px",
+              backgroundColor: "var(--gray-a6)",
+              height: "40px",
+            }}
+            flexShrink="0"
+          />
+          <Flex width="50%" justify="center" flexGrow="1" flexShrink="0">
+            <Text>股票盈亏</Text>
+          </Flex>
+        </Flex>
+        <Separator size="4" />
+        <Flex width="100%">
+          <Box width="50%" p="4" flexGrow="1" flexShrink="0">
+            <DataList.Root>
+              <DataList.Item>
+                <DataList.Label>成本</DataList.Label>
+                <DataList.Value>{optionPremium * 100}</DataList.Value>
+              </DataList.Item>
+              <DataList.Item>
+                <DataList.Label>潜在盈利</DataList.Label>
+                <DataList.Value>{optionProfit.toFixed(2)}</DataList.Value>
+              </DataList.Item>
+              <DataList.Item>
+                <DataList.Label>潜在亏损</DataList.Label>
+                <DataList.Value>{optionLost.toFixed(2)}</DataList.Value>
+              </DataList.Item>
+              <DataList.Item>
+                <DataList.Label>ROI</DataList.Label>
+                <DataList.Value>{optionROI.toFixed(2)}%</DataList.Value>
+              </DataList.Item>
+              <DataList.Item>
+                <DataList.Label>盈亏比</DataList.Label>
+                <DataList.Value>
+                  {optionProfileLostRate.toFixed(2)}
+                </DataList.Value>
+              </DataList.Item>
+            </DataList.Root>
+          </Box>
+          <Box
+            style={{
+              width: "1px",
+              backgroundColor: "var(--gray-a6)",
+              height: "188px",
+            }}
+            flexShrink="0"
+          />
+          <Box p="4" width="50%" flexGrow="1" flexShrink="0">
+            <DataList.Root>
+              <DataList.Item>
+                <DataList.Label>成本</DataList.Label>
+                <DataList.Value>
+                  {(buyPrice * maxShare).toFixed(0)}
+                </DataList.Value>
+              </DataList.Item>
+              <DataList.Item>
+                <DataList.Label>潜在盈利</DataList.Label>
+                <DataList.Value>
+                  {((profitPrice - buyPrice) * maxShare).toFixed(2)}
+                </DataList.Value>
+              </DataList.Item>
+              <DataList.Item>
+                <DataList.Label>潜在亏损</DataList.Label>
+                <DataList.Value>-{maxLost.toFixed(2)}</DataList.Value>
+              </DataList.Item>
+              <DataList.Item>
+                <DataList.Label>ROI</DataList.Label>
+                <DataList.Value>{(stockROI * 100).toFixed(2)}%</DataList.Value>
+              </DataList.Item>
+              <DataList.Item>
+                <DataList.Label>盈亏比</DataList.Label>
+                <DataList.Value>{winToLoseRate.toFixed(2)}</DataList.Value>
+              </DataList.Item>
+            </DataList.Root>
+          </Box>
+        </Flex>
+      </Flex>
       <pre
         style={{
           backgroundColor: "var(--gray-a2)",
-          padding: "var(--space-1)",
+          padding: "var(--space-3)",
           fontSize: "var(--font-size-1)",
-          borderRadius: "var(--radius-1)",
+          borderRadius: "var(--radius-3)",
           maxWidth: "100%",
           overflowX: "auto",
+          border: "1px solid var(--gray-a4)",
         }}
       >
         {text}
