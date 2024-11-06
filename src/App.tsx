@@ -141,7 +141,13 @@ const App: FC = () => {
 期权计算：
 - 期权行权价：${optionStrikePrice}
 - 期权费用：${optionPremium}
+- 期权总成本：${(optionPremium * 100).toFixed(2)}
+- 期权止盈价：${(profitPrice - optionStrikePrice).toFixed(2)}
+- 期权盈利：${optionProfit.toFixed(2)}
+- 期权止损价：${(riskPrice - optionStrikePrice).toFixed(2)}
+- 期权亏损：${optionLost.toFixed(2)}
 - 期权 ROI: ${optionROI.toFixed(2)}%
+- 期权盈亏比：${optionProfileLostRate.toFixed(2)}
 `;
   }, [
     profitPrice,
