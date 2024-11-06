@@ -117,37 +117,23 @@ const App: FC = () => {
   }, [optionLost, optionProfit]);
 
   const text = useMemo(() => {
-    return `** ${code} ${orgMode ? `[[roam:${action}记录]]` : `${action}记录`}
-- 代码：${orgMode ? `[[roam:$${code}]]` : `$${code}`}
-- 操作：${action}
-- 周线趋势：${weeklyTrend}
-- 日线趋势：${dailyTrend}
-- 趋势的斜率为：${slope}
-
-- 计划${buyOrSell}
-- 交易价格：${buyPrice}
+    return `** ${buyOrSell} [[roam:$${code}]] ${orgMode ? `[[roam:${action}记录]]` : `${action}记录`}
+- 周线：${weeklyTrend} | 日线：${dailyTrend} | 斜率：${slope}
 - 交易理由：
-  ${plan}
+${plan}
 
-- 盈亏金额：
-- 止盈价：${profitPrice}
-- 止损价：${riskPrice}
-- 盈亏比：${winToLoseRate}
+- 正股盈亏：
+  买入价：${buyPrice} | 止盈价：${profitPrice} | 止损价：${riskPrice}
+  ROI: ${(stockROI * 100).toFixed(2)}% | 盈亏比：${winToLoseRate.toFixed(2)}
         
-风险管理：
-- 最大可承受亏损金额：${maxLost}
-- 最多可持有的头寸数量：${maxShare}
+- 风险管理：
+  最大亏损金额：${maxLost} | 最多持有头寸：${maxShare.toFixed(0)}
 
-期权计算：
-- 期权行权价：${optionStrikePrice}
-- 期权费用：${optionPremium}
-- 期权总成本：${(optionPremium * 100).toFixed(2)}
-- 期权止盈价：${(profitPrice - optionStrikePrice).toFixed(2)}
-- 期权盈利：${optionProfit.toFixed(2)}
-- 期权止损价：${(riskPrice - optionStrikePrice).toFixed(2)}
-- 期权亏损：${optionLost.toFixed(2)}
-- 期权 ROI: ${optionROI.toFixed(2)}%
-- 期权盈亏比：${optionProfileLostRate.toFixed(2)}
+- 期权盈亏：
+  行权价：${optionStrikePrice} | 费用：${optionPremium} | 总成本：${(optionPremium * 100).toFixed(2)}
+  止盈价：${(profitPrice - optionStrikePrice).toFixed(2)} | 潜在利润：${optionProfit.toFixed(2)}
+  止损价：${(riskPrice - optionStrikePrice).toFixed(2)} | 潜在亏损：${optionLost.toFixed(2)}
+  期权 ROI: ${optionROI.toFixed(2)}% | 盈亏比：${optionProfileLostRate.toFixed(2)}
 `;
   }, [
     profitPrice,
@@ -167,6 +153,10 @@ const App: FC = () => {
     optionPremium,
     optionROI,
     optionStrikePrice,
+    optionLost,
+    optionProfit,
+    optionProfileLostRate,
+    stockROI,
   ]);
 
   const handleCopy = () => {
